@@ -1,7 +1,7 @@
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
 
-export default class UsersController {
+class UsersController {
   static async postNew(req, res) {
     const { email, password } = req.body;
 
@@ -22,3 +22,5 @@ export default class UsersController {
     }
   }
 }
+
+export default UsersController;
