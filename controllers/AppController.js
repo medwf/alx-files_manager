@@ -11,8 +11,8 @@ export default class AppController {
   static getStats(_req, res) {
     Promise.all([dbClient.nbUsers(), dbClient.nbFiles()]).then(
       ([users, files]) => {
-        res.status(200).json({ users: users, files: files });
-      }
+        res.status(200).json({ users, files });
+      },
     );
   }
 }
