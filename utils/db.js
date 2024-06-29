@@ -34,6 +34,20 @@ class DBClient {
   async nbFiles() {
     return this.client.collection('files').countDocuments();
   }
+
+  User(event, email, password) {
+    if (event === 'get') {
+      return this.client.collection('users').findOne({ email });
+    }
+    if (event === 'set') {
+      return this.client.collection('users').insertOne({ email, password });
+    }
+    return this.client.collection('users');
+  }
+
+  Files() {
+    return this.client.collection('files');
+  }
 }
 
 const dbClient = new DBClient();
