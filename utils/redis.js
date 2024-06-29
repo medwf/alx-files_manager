@@ -33,7 +33,7 @@ class RedisClient {
    * @returns {String | Object}
    */
   async get(key) {
-    return await promisify(this.client.GET).bind(this.client)(key);
+    return promisify(this.client.GET).bind(this.client)(key);
   }
 
   /**
