@@ -1,7 +1,5 @@
 import { MongoClient } from 'mongodb';
 
-require('dotenv').config();
-
 class DBClient {
   /**
    * connect to mongodb
@@ -10,13 +8,15 @@ class DBClient {
     const host = process.env.DB_HOST || 'localhost';
     const port = process.env.DB_PORT || 27017;
     const database = process.env.DB_DATABASE || 'files_manager';
-    const URL = `mongodb://${host}:${port}/${database}`;
+    const URL = `mongodb://${host}:${port}`;
 
-    this.client = new MongoClient(URL, {
-      useUnifiedTopology: true,
+    this.isConnected = false;
+    MongoClient.connect(URL, { useUnifiedTopology: true }, (_err, Client) => {
+      if (Client) {
+        this.isConnected = true;
+        this.client = Client.db(database);
+      }
     });
-
-    this.client.connect();
   }
 
   /**
@@ -24,15 +24,15 @@ class DBClient {
    * @returns {boolean}
    */
   isAlive() {
-    return this.client.isConnected();
+    return this.isConnected;
   }
 
   async nbUsers() {
-    return this.client.db().collection('users').countDocuments() || 0;
+    return this.client.collection('users').countDocuments();
   }
 
   async nbFiles() {
-    return this.client.db().collection('files').countDocuments() || 0;
+    return this.client.collection('files').countDocuments();
   }
 }
 
