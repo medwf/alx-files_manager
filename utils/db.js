@@ -35,13 +35,7 @@ class DBClient {
     return this.client.collection('files').countDocuments();
   }
 
-  User(event, email, password) {
-    if (event === 'get') {
-      return this.client.collection('users').findOne({ email });
-    }
-    if (event === 'set') {
-      return this.client.collection('users').insertOne({ email, password });
-    }
+  async getUsers() {
     return this.client.collection('users');
   }
 
