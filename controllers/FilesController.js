@@ -57,7 +57,6 @@ class FilesController {
     return res.status(201).json({ id: addFile.insertedId, localPath, ...Data });
   }
 
-  /**
   static async getShow(req, res) {
     const token = req.header('X-Token');
     if (!token) return res.status(401).json({ error: 'Unauthorized' });
@@ -67,7 +66,7 @@ class FilesController {
 
     const { id } = req.param;
 
-    const file = await dbClient.getFile('get', {
+    const file = await dbClient.File('get', {
       _id: ObjectId(id),
       userId: ObjectId(userId),
     });
@@ -105,7 +104,6 @@ class FilesController {
 
     return res.json(modifyResult);
   }
-  */
 }
 
 export default FilesController;
