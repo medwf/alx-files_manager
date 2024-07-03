@@ -14,13 +14,12 @@ class UsersController {
       return res.status(400).json({ error: 'Missing password' });
     }
 
-    const users = await dbClient.getUsers();
-    const user = await users.findOne({ email });
+    const user = await dbClient.User('get', { email });
     if (user) {
       return res.status(400).json({ error: 'Already exist' });
     }
     const hashedPassword = sha1(password);
-    const response = await users.insertOne({ email, password: hashedPassword });
+    const response = await dbClient.User('set', { email, password: hashedPassword });
     return res.status(201).json({ id: response.insertedId, email });
   }
 
@@ -31,8 +30,7 @@ class UsersController {
       const id = await redisClient.get(`auth_${token}`);
       // console.log(id);
       if (id) {
-        const users = await dbClient.getUsers();
-        const user = await users.findOne({ _id: new ObjectId(id) });
+        const user = await dbClient.User('get', { _id: new ObjectId(id) });
         if (user) {
           return res
             .status(200)

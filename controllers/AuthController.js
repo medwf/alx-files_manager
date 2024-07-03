@@ -21,8 +21,7 @@ class AuthController {
     const getAuthorization = req.get('Authorization');
     const { email, password } = AuthController.getEmailAndPassword(getAuthorization);
     if (email && password) {
-      const users = await dbClient.getUsers();
-      const user = await users.findOne({ email });
+      const user = await dbClient.User('get', { email });
       // console.log(user);
       if (user && user.email === email) {
         if (user.password === sha1(password)) {

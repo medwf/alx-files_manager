@@ -35,11 +35,17 @@ class DBClient {
     return this.client.collection('files').countDocuments();
   }
 
-  async getUsers() {
+  async User(event, data) {
+    if (event === 'get') return this.client.collection('users').findOne(data);
+    if (event === 'set') return this.client.collection('users').insertOne(data);
     return this.client.collection('users');
   }
 
-  Files() {
+  async File(event, data) {
+    if (event === 'get') return this.client.collection('files').findOne(data);
+    if (event === 'set') return this.client.collection('files').insertOne(data);
+    if (event === 'count') return this.client.collection('files').countDocuments(data);
+    if (event === 'pagination') return this.client.collection('files').aggregate(data);
     return this.client.collection('files');
   }
 }
