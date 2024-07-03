@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { writeFile, mkdir } from 'fs/promises';
+import fs from 'fs';
 import { ObjectId } from 'mongodb';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
@@ -49,11 +49,11 @@ class FilesController {
     const fileName = uuidv4();
     const localPath = path.join(currentPath, fileName);
 
-    await mkdir(currentPath, { recursive: true });
-    await writeFile(localPath, Buffer.from(data || '', 'base64'));
+    await fs.promises.mkdir(currentPath, { recursive: true });
+    await fs.promises.writeFile(localPath, Buffer.from(data, 'base64'));
 
     const addFile = await dbClient.File('set', { localPath, ...Data });
-    Data.parentId = Data.parentId === '0' ? 0 : Data.parentId;
+    Data.parentId = parentId === '0' ? 0 : ObjectId(parentId);
     return res.status(201).json({ id: addFile.insertedId, ...Data });
   }
 
