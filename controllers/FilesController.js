@@ -53,7 +53,7 @@ class FilesController {
     await fs.promises.writeFile(localPath, Buffer.from(data, 'base64'));
 
     const addFile = await dbClient.File('set', { localPath, ...Data });
-    Data.parentId = parentId === '0' ? 0 : ObjectId(parentId);
+    Data.parentId = Data.parentId === '0' ? 0 : ObjectId(parentId);
     return res.status(201).json({ id: addFile.insertedId, localPath, ...Data });
   }
 
