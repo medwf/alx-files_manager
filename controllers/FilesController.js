@@ -54,7 +54,7 @@ class FilesController {
 
     const addFile = await dbClient.File('set', { localPath, ...Data });
     Data.parentId = parentId === '0' ? 0 : ObjectId(parentId);
-    return res.status(201).json({ id: addFile.insertedId, ...Data });
+    return res.status(201).json({ id: addFile.insertedId, localPath, ...Data });
   }
 
   /**
