@@ -1,0 +1,40 @@
+# Development stage
+FROM node:current-alpine3.23 AS development
+
+# Install curl for healthchecks
+RUN apk add --no-cache curl
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY ./backend .
+
+# Expose ports
+EXPOSE ${EXPRESS_PORT}
+EXPOSE ${EXPRESS_DEBUG_PORT}
+
+# Default command for development
+CMD ["npm", "run", "dev"]
+
+# Production stage (optional)
+FROM node:current-alpine3.23 AS production
+
+ENV NODE_ENV=production
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=development /usr/src/app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["node", "dist/server.js"]
