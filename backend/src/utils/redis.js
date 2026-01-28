@@ -6,7 +6,12 @@ class RedisClient {
    * Create new instance RedisClient to redis
    */
   constructor() {
-    this.client = createClient();
+    const host = process.env.REDIS_HOST || 'localhost';
+    const port = process.env.REDIS_PORT || 6379;
+    console.log(`redis://${host}:${port}`)
+    this.client = createClient({
+      url: `redis://${host}:${port}`
+    });
     this.isConnected = true;
 
     this.client.on('error', (err) => {

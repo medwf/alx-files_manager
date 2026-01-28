@@ -11,6 +11,8 @@ class DBClient {
     const URL = `mongodb://${host}:${port}`;
 
     this.isConnected = false;
+    this.client = null;
+
     MongoClient.connect(URL, { useUnifiedTopology: true }, (_err, Client) => {
       if (Client) {
         this.isConnected = true;

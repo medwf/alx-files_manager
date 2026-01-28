@@ -3,75 +3,69 @@ services:
   # -------
   # ExpressJs
   # -------
-  express:
-    build:
-      context: ./backend
-      target: development
-    container_name: express-dev
-    command: npm run dev
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /usr/src/app/src
-          ignore:
-            - node_modules/
-    volumes:
-      - ./backend:/usr/src/app
-    env_file:
-      - .env
-    ports:
-      - "${EXPRESS_PORT}:${EXPRESS_PORT}"
-      - "${EXPRESS_DEBUG_PORT}:${EXPRESS_DEBUG_PORT}"
-
+  # app:
+  #   build:
+  #     context: ./backend
+  #     target: development
+  #   container_name: files_manager
+  #   command: npm run dev
+  #   volumes:
+  #     - ./backend:/usr/src/app
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "${EXPRESS_PORT}:${EXPRESS_PORT}"
+  #     - "${EXPRESS_DEBUG_PORT}:${EXPRESS_DEBUG_PORT}"
+  #   depends_on:
+  #     - mongodb
+  #     - redis
   # -------
   # MongoDB
   # -------
   mongodb:
     image: mongo:noble
     restart: unless-stopped
+    container_name: mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      # MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
     volumes:
       - mongo-data:/data/db
     ports:
-      - ${MONGODB_PORT}:${MONGODB_PORT} # remove in prod
+      - ${MONGO_PORT}:27017 # remove in prod
 
   mongodb-express:
     image: mongo-express:latest
+    container_name: mongodb-express
     restart: always
     ports:
-      - "${MONGODB_EXPRESS_PORT}:${MONGODB_EXPRESS_PORT}"
+      - "${MONGO_EXPRESS_PORT}:8081"
     environment:
-      ME_CONFIG_MONGODB_URL: mongodb://${DB_USERNAME}:${DB_PASSWORD}@mongodb:27017
-      ME_CONFIG_BASICAUTH_ENABLED: "true"
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}
       ME_CONFIG_MONGODB_SERVER: mongodb
-
+      ME_CONFIG_BASICAUTH: "false"
+      # ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USER}
+      # ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+      # ME_CONFIG_BASICAUTH_USERNAME: admin
+      # ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    depends_on:
+      - mongodb
   # -------
   # Redis
+  # --requirepass ${REDIS_PASSWORD}
   # -------
   redis:
-    image: edis:8.6-rc1-trixie
+    image: redis:8.4.0
     restart: unless-stopped
     container_name: redis
     command: >
       redis-server
-      --requirepass ${REDIS_PASSWORD}
       --appendonly yes
       --dir /data
     ports:
       - "${REDIS_PORT}:6379" # remove in prod
     volumes:
-      - redis/redis.conf:/usr/local/etc/redis/redis.conf
       - redis-data:/data
-    env_file:
-      - .env
-    depends_on:
-      - mongodb
 
 volumes:
   redis-data:
